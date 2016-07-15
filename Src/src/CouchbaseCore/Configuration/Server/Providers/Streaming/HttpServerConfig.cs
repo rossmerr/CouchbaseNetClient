@@ -36,7 +36,10 @@ namespace Couchbase.Configuration.Server.Providers.Streaming
             _clientConfig = clientConfig;
             _bucketName = bucketName;
 
-            _httpClient = new HttpClient(new AuthenticatingHttpClientHandler(bucketName, password));
+            _httpClient = new HttpClient(new AuthenticatingHttpClientHandler(bucketName, password)
+            {
+                ServerCertificateCustomValidationCallback = ServerCertificateValidationCallback
+            });
         }
 
         public string BucketName
@@ -118,6 +121,7 @@ namespace Couchbase.Configuration.Server.Providers.Streaming
             {
                 try
                 {
+                
                     var response = _httpClient.GetAsync(uri).Result;
 
                     if (!response.IsSuccessStatusCode)
@@ -145,6 +149,7 @@ namespace Couchbase.Configuration.Server.Providers.Streaming
 
         T DownLoadConfig<T>(Uri uri)
         {
+            // This should now be working from the HttpCleint ServerCertificateCustomValidationCallback properties, see the constructor 
             //ServicePointManager.ServerCertificateValidationCallback += ServerCertificateValidationCallback;
             var response = ReplaceHost(DownloadString(uri), uri);
             return JsonConvert.DeserializeObject<T>(response);
