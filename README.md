@@ -1,8 +1,7 @@
-Official Couchbase .NET SDK
+Couchbase .NET SDK
 ====================
 
-* master is 2.0 development branch
-* release13 is 1.3.X development branch
+* master is 2.0 development branch of dot.net core
 
 ## Running the Unit Tests ##
 
