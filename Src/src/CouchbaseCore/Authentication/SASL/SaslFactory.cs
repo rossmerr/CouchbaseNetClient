@@ -43,7 +43,7 @@ namespace Couchbase.Authentication.SASL
                 }
                 catch (Exception e)
                 {
-                 //   Log.Error(e);
+                    logger.LogError(e.Message, e);
                 }
                 finally
                 {

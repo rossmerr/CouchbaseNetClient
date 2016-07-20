@@ -28,7 +28,7 @@ namespace Couchbase.Configuration
         private readonly DateTime _creationTime;
         private readonly ClientConfiguration _clientConfig;
         protected IDictionary<IPAddress, IServer> Servers = new Dictionary<IPAddress, IServer>();
-        protected Func<IConnectionPool, IIOService> IOServiceFactory;
+        protected Func<IConnectionPool,ILogger, IIOService> IOServiceFactory;
         protected Func<PoolConfiguration, IPEndPoint, IConnectionPool> ConnectionPoolFactory;
         protected readonly Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> SaslFactory;
         protected IBucketConfig _bucketConfig;
@@ -52,7 +52,7 @@ namespace Couchbase.Configuration
         public static ConcurrentBag<FailureCountingUri> SearchUris = new ConcurrentBag<FailureCountingUri>();
 
         protected ConfigContextBase(IBucketConfig bucketConfig, ClientConfiguration clientConfig,
-            Func<IConnectionPool, IIOService> ioServiceFactory,
+            Func<IConnectionPool, ILogger, IIOService> ioServiceFactory,
             Func<PoolConfiguration, IPEndPoint, IConnectionPool> connectionPoolFactory,
             Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> saslFactory,
             ITypeTranscoder transcoder, ILogger logger)

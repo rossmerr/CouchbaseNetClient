@@ -25,7 +25,7 @@ namespace Couchbase.Configuration
         private readonly ILogger Log;
 
         public CouchbaseConfigContext(IBucketConfig bucketConfig, ClientConfiguration clientConfig,
-            Func<IConnectionPool, IIOService> ioServiceFactory,
+            Func<IConnectionPool, ILogger, IIOService> ioServiceFactory,
             Func<PoolConfiguration, IPEndPoint, IConnectionPool> connectionPoolFactory,
             Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> saslFactory,
             ITypeTranscoder transcoder, ILogger logger )
@@ -81,7 +81,7 @@ namespace Couchbase.Configuration
                                 var poolConfiguration = ClientConfig.BucketConfigs[BucketConfig.Name].ClonePoolConfiguration(uri);
                                 var connectionPool = ConnectionPoolFactory(poolConfiguration.Clone(uri), endpoint);
 
-                                var ioService = IOServiceFactory(connectionPool);
+                                var ioService = IOServiceFactory(connectionPool, Log);
 
                                 server = new Core.Server(ioService, adapter, ClientConfig, bucketConfig, Transcoder, QueryCache, Log)
                                 {
@@ -204,7 +204,7 @@ namespace Couchbase.Configuration
                                 var poolConfiguration = ClientConfig.BucketConfigs[BucketConfig.Name].ClonePoolConfiguration(uri);
                                 var connectionPool = ConnectionPoolFactory(poolConfiguration.Clone(uri), endpoint);
 
-                                var newIoService = IOServiceFactory(connectionPool);
+                                var newIoService = IOServiceFactory(connectionPool, Log);
 
                                 server = new Core.Server(newIoService, adapter, ClientConfig, BucketConfig, Transcoder, QueryCache, Log)
                                 {
@@ -291,7 +291,7 @@ namespace Couchbase.Configuration
                             var poolConfiguration = ClientConfig.BucketConfigs[BucketConfig.Name].ClonePoolConfiguration(uri);
                             var connectionPool = ConnectionPoolFactory(poolConfiguration.Clone(uri), endpoint);
 
-                            var newIoService = IOServiceFactory(connectionPool);
+                            var newIoService = IOServiceFactory(connectionPool, Log);
 
                             server = new Core.Server(newIoService, adapter, ClientConfig, BucketConfig, Transcoder, QueryCache, Log)
                             {

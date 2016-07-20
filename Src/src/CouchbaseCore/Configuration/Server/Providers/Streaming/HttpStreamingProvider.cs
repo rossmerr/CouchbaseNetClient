@@ -33,7 +33,7 @@ namespace Couchbase.Configuration.Server.Providers.Streaming
         private readonly ILogger Log;
 
         public HttpStreamingProvider(ClientConfiguration clientConfig,
-            Func<IConnectionPool, IIOService> ioServiceFactory,
+            Func<IConnectionPool, ILogger, IIOService> ioServiceFactory,
             Func<PoolConfiguration, IPEndPoint, IConnectionPool> connectionPoolFactory,
             Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> saslFactory,
             IByteConverter converter,

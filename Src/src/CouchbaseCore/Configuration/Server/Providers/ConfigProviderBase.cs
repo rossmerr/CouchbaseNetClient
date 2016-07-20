@@ -19,7 +19,7 @@ namespace Couchbase.Configuration.Server.Providers
         protected readonly ILogger Log;
         private readonly ClientConfiguration _clientConfig;
         private readonly Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> _saslFactory;
-        private readonly Func<IConnectionPool, IIOService> _ioServiceFactory;
+        private readonly Func<IConnectionPool, ILogger, IIOService> _ioServiceFactory;
         private readonly Func<PoolConfiguration, IPEndPoint, IConnectionPool> _connectionPoolFactory;
         private readonly ConcurrentDictionary<string, IConfigInfo> _configs = new ConcurrentDictionary<string, IConfigInfo>();
         private readonly ConcurrentDictionary<string, IConfigObserver> _configObservers = new ConcurrentDictionary<string, IConfigObserver>();
@@ -28,7 +28,7 @@ namespace Couchbase.Configuration.Server.Providers
         protected ReaderWriterLockSlim ConfigLock = new ReaderWriterLockSlim();
 
         protected ConfigProviderBase(ClientConfiguration clientConfig,
-            Func<IConnectionPool, IIOService> ioServiceFactory,
+            Func<IConnectionPool, ILogger, IIOService> ioServiceFactory,
             Func<PoolConfiguration, IPEndPoint, IConnectionPool> connectionPoolFactory,
             Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> saslFactory,
             IByteConverter converter,
@@ -54,7 +54,7 @@ namespace Couchbase.Configuration.Server.Providers
             get { return _saslFactory; }
         }
 
-        protected Func<IConnectionPool, IIOService> IOServiceFactory
+        protected Func<IConnectionPool, ILogger, IIOService> IOServiceFactory
         {
             get { return _ioServiceFactory; }
         }

@@ -530,7 +530,7 @@ namespace Couchbase.Configuration.Client
         /// The io service.
         /// </value>
         [JsonIgnore]
-        public Func<IConnectionPool, IIOService> IOServiceCreator { get; set; }
+        public Func<IConnectionPool, ILogger, IIOService> IOServiceCreator { get; set; }
 
         /// <summary>
         /// Gets or sets the connection pool creator.

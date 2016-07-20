@@ -63,8 +63,9 @@ namespace Couchbase
             public int Count;
         }
 
-        internal CouchbaseBucket(IClusterController clusterController, string bucketName, IByteConverter converter, ITypeTranscoder transcoder)
+        internal CouchbaseBucket(IClusterController clusterController, string bucketName, IByteConverter converter, ITypeTranscoder transcoder, ILogger logger)
         {
+            Log = logger;
             _clusterController = clusterController;
             _converter = converter;
             _transcoder = transcoder;
@@ -80,8 +81,9 @@ namespace Couchbase
         /// <summary>
         /// For unit testing purposes only
         /// </summary>
-        internal CouchbaseBucket(IRequestExecuter requestExecuter, IByteConverter converter, ITypeTranscoder transcoder)
+        internal CouchbaseBucket(IRequestExecuter requestExecuter, IByteConverter converter, ITypeTranscoder transcoder, ILogger logger)
         {
+            Log = logger;
             _requestExecuter = requestExecuter;
             _converter = converter;
             _transcoder = transcoder;

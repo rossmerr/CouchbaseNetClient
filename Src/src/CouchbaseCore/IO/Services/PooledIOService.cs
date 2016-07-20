@@ -32,8 +32,9 @@ namespace Couchbase.IO.Services
         /// Initializes a new instance of the <see cref="PooledIOService"/> class.
         /// </summary>
         /// <param name="connectionPool">The connection pool.</param>
-        public PooledIOService(IConnectionPool connectionPool)
+        public PooledIOService(IConnectionPool connectionPool, ILogger logger)
         {
+            Log = logger;
             Log.LogDebug("Creating PooledIOService {0}", _identity);
             _connectionPool = connectionPool;
         }
@@ -43,8 +44,9 @@ namespace Couchbase.IO.Services
         /// </summary>
         /// <param name="connectionPool">The connection pool.</param>
         /// <param name="saslMechanism">The sasl mechanism.</param>
-        public PooledIOService(IConnectionPool connectionPool, ISaslMechanism saslMechanism)
+        public PooledIOService(IConnectionPool connectionPool, ISaslMechanism saslMechanism, ILogger logger)
         {
+            Log = logger;
             Log.LogDebug("Creating PooledIOService {0}", _identity);
             _connectionPool = connectionPool;
             _saslMechanism = saslMechanism;

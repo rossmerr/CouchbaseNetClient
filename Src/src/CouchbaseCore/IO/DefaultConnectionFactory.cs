@@ -21,7 +21,8 @@ namespace Couchbase.IO
         /// Returns a functory for creating <see cref="Connection"/> objects.
         /// </summary>
         /// <returns>A <see cref="Connection"/> based off of the <see cref="PoolConfiguration"/> of the <see cref="IConnectionPool"/>.</returns>
-        internal static Func<ConnectionPool<T>, IByteConverter, BufferAllocator, T> GetGeneric<T>(ILogger logger) where T : class, IConnection
+        internal static Func<ConnectionPool<T>, IByteConverter, BufferAllocator, T> GetGeneric<T>(ILogger logger)
+            where T : class, IConnection
         {
             Func<IConnectionPool<T>, IByteConverter, BufferAllocator, T> factory = (p, c, b) =>
             {
@@ -50,7 +51,7 @@ namespace Couchbase.IO
                 if ((asyncEventArgs.SocketError != SocketError.Success) || !socket.Connected)
                 {
                     socket.Dispose();
-                    throw new SocketException((int)asyncEventArgs.SocketError);
+                    throw new SocketException((int) asyncEventArgs.SocketError);
                 }
 
                 IConnection connection;
@@ -61,11 +62,7 @@ namespace Couchbase.IO
                 }
                 else
                 {
-                    connection = Activator.CreateInstance(typeof (T),
-                        BindingFlags.Instance | BindingFlags.NonPublic,
-                        null,
-                        new object[] {p, socket, c, b},
-                        null) as T;
+                    connection = Activator.CreateInstance(typeof(T), p, socket, c, b, logger) as T;
                 }
                 //need to be able to completely disable the feature if false - this should work
                 if (p.Configuration.EnableTcpKeepAlives)

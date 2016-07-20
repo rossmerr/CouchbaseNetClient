@@ -10,7 +10,7 @@ namespace Couchbase.IO
     /// </summary>
     /// <remarks>Used to reduce memory fragmentation do to pinning.</remarks>
     /// <remarks>Near identical to implementation found in MSDN documentation: http://msdn.microsoft.com/en-us/library/bb517542%28v=vs.110%29.aspx</remarks>
-    internal class BufferAllocator
+    public class BufferAllocator
     {
         protected readonly ILogger Log;
         private readonly int _numberOfBytes;

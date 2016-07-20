@@ -25,7 +25,7 @@ namespace Couchbase.Configuration
         private readonly ILogger Log;
 
         public MemcachedConfigContext(IBucketConfig bucketConfig, ClientConfiguration clientConfig,
-            Func<IConnectionPool, IIOService> ioServiceFactory,
+            Func<IConnectionPool,ILogger, IIOService> ioServiceFactory,
             Func<PoolConfiguration, IPEndPoint, IConnectionPool> connectionPoolFactory,
             Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> saslFactory,
             ITypeTranscoder transcoder, ILogger logger)
@@ -76,7 +76,7 @@ namespace Couchbase.Configuration
                         {
                             var uri = UrlUtil.GetBaseUri(adapter, clientBucketConfig);
                             var connectionPool = ConnectionPoolFactory(clientBucketConfig.PoolConfiguration.Clone(uri), endpoint);
-                            var ioService = IOServiceFactory(connectionPool);
+                            var ioService = IOServiceFactory(connectionPool, Log);
                             var server = new Core.Server(ioService, adapter, ClientConfig, bucketConfig, Transcoder, Log)
                             {
                                 SaslFactory = SaslFactory
@@ -135,7 +135,7 @@ namespace Couchbase.Configuration
                     {
                         var uri = UrlUtil.GetBaseUri(adapter, clientBucketConfig);
                         var connectionPool = ConnectionPoolFactory(clientBucketConfig.PoolConfiguration.Clone(uri), endpoint);
-                        var ioService = IOServiceFactory(connectionPool);
+                        var ioService = IOServiceFactory(connectionPool, Log);
 
                         var server = new Core.Server(ioService, adapter, ClientConfig, BucketConfig, Transcoder, Log)
                         {

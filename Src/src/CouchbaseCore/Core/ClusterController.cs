@@ -24,7 +24,7 @@ namespace Couchbase.Core
         private readonly ConcurrentDictionary<string, IBucket> _buckets = new ConcurrentDictionary<string, IBucket>();
         private readonly ConcurrentDictionary<string, int> _refCount = new ConcurrentDictionary<string, int>();
         private readonly List<IConfigProvider> _configProviders = new List<IConfigProvider>();
-        private readonly Func<IConnectionPool, IIOService> _ioServiceFactory;
+        private readonly Func<IConnectionPool, ILogger, IIOService> _ioServiceFactory;
         private readonly Func<PoolConfiguration, IPEndPoint, IConnectionPool> _connectionPoolFactory;
         private readonly Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> _saslFactory;
         private readonly object _syncObject = new object();
@@ -47,7 +47,7 @@ namespace Couchbase.Core
         }
 
         public ClusterController(ClientConfiguration clientConfig,
-            Func<IConnectionPool, IIOService> ioServiceFactory,
+            Func<IConnectionPool, ILogger, IIOService> ioServiceFactory,
             Func<PoolConfiguration, IPEndPoint, IConnectionPool> connectionPoolFactory,
             Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> saslFactory,
             IByteConverter converter,
@@ -154,7 +154,7 @@ namespace Couchbase.Core
                         {
                             case NodeLocatorEnum.VBucket:
                                 bucket = _buckets.GetOrAdd(bucketName,
-                                    name => new CouchbaseBucket(this, bucketName, Converter, Transcoder));
+                                    name => new CouchbaseBucket(this, bucketName, Converter, Transcoder, Log));
                                 refCountable = bucket as IRefCountable;
                                 if (refCountable != null)
                                 {

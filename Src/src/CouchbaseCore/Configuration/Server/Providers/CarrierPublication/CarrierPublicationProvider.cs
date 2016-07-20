@@ -23,7 +23,7 @@ namespace Couchbase.Configuration.Server.Providers.CarrierPublication
         private Timer _heartBeat;
 
         public CarrierPublicationProvider(ClientConfiguration clientConfig,
-            Func<IConnectionPool, IIOService> ioServiceFactory,
+            Func<IConnectionPool, ILogger, IIOService> ioServiceFactory,
             Func<PoolConfiguration, IPEndPoint, IConnectionPool> connectionPoolFactory,
             Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> saslFactory,
             IByteConverter converter,
@@ -117,7 +117,7 @@ namespace Couchbase.Configuration.Server.Providers.CarrierPublication
                     var poolConfig = bucketConfiguration.ClonePoolConfiguration(server);
                     var connectionPool = ConnectionPoolFactory(poolConfig, endPoint);
 
-                    ioService = IOServiceFactory(connectionPool);
+                    ioService = IOServiceFactory(connectionPool, Log);
                     var saslMechanism = SaslFactory(bucketName, password, ioService, Transcoder);
                     ioService.SaslMechanism = saslMechanism;
 
