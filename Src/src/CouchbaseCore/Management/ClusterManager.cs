@@ -27,6 +27,7 @@ namespace Couchbase.Management
     /// </summary>
     public class ClusterManager : IClusterManager
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger Log;
         private readonly ClientConfiguration _clientConfig;
         private readonly IServerConfig _serverConfig;
@@ -41,9 +42,10 @@ namespace Couchbase.Management
             CouchbaseService.N1QL
         };
 
-        internal ClusterManager(ClientConfiguration clientConfig, IServerConfig serverConfig, HttpClient httpClient, IDataMapper mapper, string username, string password, ILogger logger)
+        internal ClusterManager(ClientConfiguration clientConfig, IServerConfig serverConfig, HttpClient httpClient, IDataMapper mapper, string username, string password, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<ClusterManager>();
             _clientConfig = clientConfig;
             _serverConfig = serverConfig;
             Mapper = mapper;
@@ -405,7 +407,7 @@ namespace Couchbase.Management
 
         HttpServerConfig GetConfig(string name, string password)
         {
-            var config = new HttpServerConfig(_clientConfig, name, password, Log);
+            var config = new HttpServerConfig(_clientConfig, name, password, _loggerFactory);
             config.Initialize();
             return config;
         }

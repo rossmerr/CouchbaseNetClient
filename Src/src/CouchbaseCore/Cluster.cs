@@ -24,6 +24,7 @@ namespace Couchbase
     /// </summary>
     public sealed class Cluster : ICluster
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger Log;
         private const string DefaultBucket = "default";
         private readonly ClientConfiguration _configuration;
@@ -36,8 +37,8 @@ namespace Couchbase
         /// <remarks>
         /// This is the default configuration and will attempt to bootstrap off of localhost.
         /// </remarks>
-        public Cluster(ILogger logger)
-            : this(new ClientConfiguration(logger), logger)
+        public Cluster(ILoggerFactory loggerFactory)
+            : this(new ClientConfiguration(loggerFactory), loggerFactory)
         {
         }
 
@@ -46,8 +47,8 @@ namespace Couchbase
         /// Ctor for creating Cluster instance using an <see cref="ICouchbaseClientDefinition"/>.
         /// </summary>
         /// <param name="definition">The configuration definition loaded from a configuration file.</param>
-        public Cluster(ICouchbaseClientDefinition definition, ILogger logger)
-            : this(new ClientConfiguration(definition, logger), logger)
+        public Cluster(ICouchbaseClientDefinition definition, ILoggerFactory loggerFactory)
+            : this(new ClientConfiguration(definition, loggerFactory), loggerFactory)
         {
         }
 
@@ -69,13 +70,14 @@ namespace Couchbase
         /// Ctor for creating Cluster instance with a custom <see cref="ClientConfiguration"/> configuration.
         /// </summary>
         /// <param name="configuration">The ClientCOnfiguration to use for initialization.</param>
-        public Cluster(ClientConfiguration configuration, ILogger logger)
+        public Cluster(ClientConfiguration configuration, ILoggerFactory loggerFactory)
         {
             // can't use ": this(" to call the other constructor because we need to pass "this" to the ClusterController constructor
             // so we have a bit of code duplication here
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<Cluster>();
             _configuration = configuration;
-            _clusterController = new ClusterController(this, configuration, Log);
+            _clusterController = new ClusterController(this, configuration, _loggerFactory);
             LogConfigurationAndVersion(_configuration);
         }
 
@@ -157,7 +159,7 @@ namespace Couchbase
         /// <returns>A <see cref="IClusterManager"/> instance that uses the current <see cref="ICluster"/> configuration settings. </returns>
         public IClusterManager CreateManager(string username, string password)
         {
-            var serverConfig = new HttpServerConfig(Configuration, username, password, Log);
+            var serverConfig = new HttpServerConfig(Configuration, username, password, _loggerFactory);
             try
             {
                 serverConfig.Initialize();
@@ -175,7 +177,7 @@ namespace Couchbase
                 new HttpClient(),
                 new JsonDataMapper(Configuration),
                 username,
-                password, Log);
+                password, _loggerFactory);
         }
 
         /// <summary>

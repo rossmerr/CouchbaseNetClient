@@ -19,41 +19,43 @@ namespace Couchbase.Core
 {
     internal sealed class ClusterController : IClusterController
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger Log;
         private readonly ClientConfiguration _clientConfig;
         private readonly ConcurrentDictionary<string, IBucket> _buckets = new ConcurrentDictionary<string, IBucket>();
         private readonly ConcurrentDictionary<string, int> _refCount = new ConcurrentDictionary<string, int>();
         private readonly List<IConfigProvider> _configProviders = new List<IConfigProvider>();
-        private readonly Func<IConnectionPool, ILogger, IIOService> _ioServiceFactory;
+        private readonly Func<IConnectionPool, ILoggerFactory, IIOService> _ioServiceFactory;
         private readonly Func<PoolConfiguration, IPEndPoint, IConnectionPool> _connectionPoolFactory;
         private readonly Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> _saslFactory;
         private readonly object _syncObject = new object();
         private volatile bool _disposed;
 
-        public ClusterController(ClientConfiguration clientConfig, ILogger logger)
+        public ClusterController(ClientConfiguration clientConfig, ILoggerFactory loggerFactory)
             : this(clientConfig,
             clientConfig.IOServiceCreator,
             clientConfig.ConnectionPoolCreator,
             clientConfig.CreateSaslMechanism,
             clientConfig.Converter(),
-            clientConfig.Transcoder(), logger)
+            clientConfig.Transcoder(), loggerFactory)
         {
         }
 
-        public ClusterController(ICluster cluster, ClientConfiguration clientConfig, ILogger logger)
-            : this(clientConfig, logger)
+        public ClusterController(ICluster cluster, ClientConfiguration clientConfig, ILoggerFactory loggerFactory)
+            : this(clientConfig, loggerFactory)
         {
             Cluster = cluster;
         }
 
         public ClusterController(ClientConfiguration clientConfig,
-            Func<IConnectionPool, ILogger, IIOService> ioServiceFactory,
+            Func<IConnectionPool, ILoggerFactory, IIOService> ioServiceFactory,
             Func<PoolConfiguration, IPEndPoint, IConnectionPool> connectionPoolFactory,
             Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> saslFactory,
             IByteConverter converter,
-            ITypeTranscoder transcoder, ILogger logger)
+            ITypeTranscoder transcoder, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<ClusterController>();
             _clientConfig = clientConfig;
             _ioServiceFactory = ioServiceFactory;
             _connectionPoolFactory = connectionPoolFactory;
@@ -79,7 +81,7 @@ namespace Couchbase.Core
                 _connectionPoolFactory,
                 _saslFactory,
                 Converter,
-                Transcoder, Log));
+                Transcoder, _loggerFactory));
 
             _configProviders.Add(new HttpStreamingProvider(_clientConfig,
                 _ioServiceFactory,
@@ -87,7 +89,7 @@ namespace Couchbase.Core
                 _saslFactory,
                 Converter,
                 Transcoder, 
-                Log));
+                _loggerFactory));
         }
 
         public IConfigProvider GetProvider(string name)

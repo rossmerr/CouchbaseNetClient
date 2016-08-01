@@ -23,15 +23,17 @@ namespace Couchbase.Configuration
     internal class MemcachedConfigContext : ConfigContextBase
     {
         private readonly ILogger Log;
-
+        private readonly ILoggerFactory _loggerFactory;
+            
         public MemcachedConfigContext(IBucketConfig bucketConfig, ClientConfiguration clientConfig,
-            Func<IConnectionPool,ILogger, IIOService> ioServiceFactory,
+            Func<IConnectionPool,ILoggerFactory, IIOService> ioServiceFactory,
             Func<PoolConfiguration, IPEndPoint, IConnectionPool> connectionPoolFactory,
             Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> saslFactory,
-            ITypeTranscoder transcoder, ILogger logger)
-            : base(bucketConfig, clientConfig, ioServiceFactory, connectionPoolFactory, saslFactory, transcoder, logger)
+            ITypeTranscoder transcoder, ILoggerFactory loggerFactory)
+            : base(bucketConfig, clientConfig, ioServiceFactory, connectionPoolFactory, saslFactory, transcoder, loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<MemcachedConfigContext>();
         }
 
         /// <summary>
@@ -76,7 +78,7 @@ namespace Couchbase.Configuration
                         {
                             var uri = UrlUtil.GetBaseUri(adapter, clientBucketConfig);
                             var connectionPool = ConnectionPoolFactory(clientBucketConfig.PoolConfiguration.Clone(uri), endpoint);
-                            var ioService = IOServiceFactory(connectionPool, Log);
+                            var ioService = IOServiceFactory(connectionPool, _loggerFactory);
                             var server = new Core.Server(ioService, adapter, ClientConfig, bucketConfig, Transcoder, Log)
                             {
                                 SaslFactory = SaslFactory
@@ -135,7 +137,7 @@ namespace Couchbase.Configuration
                     {
                         var uri = UrlUtil.GetBaseUri(adapter, clientBucketConfig);
                         var connectionPool = ConnectionPoolFactory(clientBucketConfig.PoolConfiguration.Clone(uri), endpoint);
-                        var ioService = IOServiceFactory(connectionPool, Log);
+                        var ioService = IOServiceFactory(connectionPool, _loggerFactory);
 
                         var server = new Core.Server(ioService, adapter, ClientConfig, BucketConfig, Transcoder, Log)
                         {

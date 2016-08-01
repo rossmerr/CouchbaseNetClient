@@ -18,7 +18,7 @@ namespace Couchbase.IO
         /// Gets a <see cref="Func{IConnectionPool, IIOService}"/> that will create a <see cref="PooledIOService"/> instance.
         /// </summary>
         /// <returns></returns>
-        public static Func<IConnectionPool, ILogger, IIOService> GetFactory()
+        public static Func<IConnectionPool, ILoggerFactory, IIOService> GetFactory()
         {
             return (p, l) => new PooledIOService(p, l);
         }
@@ -38,7 +38,7 @@ namespace Couchbase.IO
         /// <exception cref="TypeLoadException">Condition.</exception>
         /// <exception cref="TargetInvocationException">A class initializer is invoked and throws an exception. </exception>
         /// <exception cref="BadImageFormatException">The assembly or one of its dependencies is not valid. -or-Version 2.0 or later of the common language runtime is currently loaded, and the assembly was compiled with a later version.</exception>
-        public static Func<IConnectionPool, ILogger, IIOService> GetFactory(string typeName)
+        public static Func<IConnectionPool, ILoggerFactory, IIOService> GetFactory(string typeName)
         {
             return (p, l) =>
             {

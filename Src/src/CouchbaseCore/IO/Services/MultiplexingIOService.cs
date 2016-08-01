@@ -19,6 +19,7 @@ namespace Couchbase.IO.Services
     /// </summary>
     public class MultiplexingIOService : IIOService
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger Log;
         private readonly IConnectionPool _connectionPool;
 
@@ -27,9 +28,10 @@ namespace Couchbase.IO.Services
         private IConnection _connection;
         private object _syncObj = new object();
 
-        public MultiplexingIOService(IConnectionPool connectionPool, ILogger logger)
+        public MultiplexingIOService(IConnectionPool connectionPool, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<MultiplexingIOService>();
             Log.LogDebug("Creating IOService {0}", _identity);
             _connectionPool = connectionPool;
             _connection = _connectionPool.Acquire();
@@ -41,8 +43,8 @@ namespace Couchbase.IO.Services
             }
         }
 
-        public MultiplexingIOService(IConnectionPool connectionPool, ISaslMechanism saslMechanism, ILogger logger)
-            : this(connectionPool, logger)
+        public MultiplexingIOService(IConnectionPool connectionPool, ISaslMechanism saslMechanism, ILoggerFactory loggerFactory)
+            : this(connectionPool, loggerFactory)
         {
             SaslMechanism = saslMechanism;
         }

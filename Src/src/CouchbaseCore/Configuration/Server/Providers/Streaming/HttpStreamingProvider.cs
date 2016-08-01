@@ -30,17 +30,15 @@ namespace Couchbase.Configuration.Server.Providers.Streaming
         private static readonly CountdownEvent CountdownEvent = new CountdownEvent(1);
         private static readonly AutoResetEvent RegisterEvent = new AutoResetEvent(true);
         private volatile bool _disposed;
-        private readonly ILogger Log;
 
         public HttpStreamingProvider(ClientConfiguration clientConfig,
-            Func<IConnectionPool, ILogger, IIOService> ioServiceFactory,
+            Func<IConnectionPool, ILoggerFactory, IIOService> ioServiceFactory,
             Func<PoolConfiguration, IPEndPoint, IConnectionPool> connectionPoolFactory,
             Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> saslFactory,
             IByteConverter converter,
-            ITypeTranscoder transcoder, ILogger logger)
-            : base(clientConfig, ioServiceFactory, connectionPoolFactory, saslFactory, converter, transcoder, logger)
+            ITypeTranscoder transcoder, ILoggerFactory loggerFactory)
+            : base(clientConfig, ioServiceFactory, connectionPoolFactory, saslFactory, converter, transcoder, loggerFactory)
         {
-            Log = logger;
         }
 
         /// <summary>
@@ -236,7 +234,7 @@ namespace Couchbase.Configuration.Server.Providers.Streaming
                         IOServiceFactory,
                         ConnectionPoolFactory,
                         SaslFactory,
-                        Transcoder, Log);
+                        Transcoder, _loggerFactory);
                     break;
                 case NodeLocatorEnum.Ketama:
                     configInfo = new MemcachedConfigContext(bucketConfig,
@@ -244,7 +242,7 @@ namespace Couchbase.Configuration.Server.Providers.Streaming
                         IOServiceFactory,
                         ConnectionPoolFactory,
                         SaslFactory,
-                        Transcoder, Log);
+                        Transcoder, _loggerFactory);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -261,7 +259,7 @@ namespace Couchbase.Configuration.Server.Providers.Streaming
         /// <param name="password"></param>
         void StartProvider(string username, string password)
         {
-            _serverConfig = new HttpServerConfig(ClientConfig, username, password, Log);
+            _serverConfig = new HttpServerConfig(ClientConfig, username, password, _loggerFactory);
             _serverConfig.Initialize();
             Log.LogDebug("Starting provider on main thread: {0}", Thread.CurrentThread.ManagedThreadId);
         }

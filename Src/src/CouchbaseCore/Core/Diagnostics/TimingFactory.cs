@@ -8,14 +8,14 @@ namespace Couchbase.Core.Diagnostics
         private static ITimingStore _store;
         private static volatile object _lockObj = new object();
 
-        public static Func<TimingLevel, object, IOperationTimer> GetTimer(ILogger log)
+        public static Func<TimingLevel, object, IOperationTimer> GetTimer(ILoggerFactory loggerFactory)
         {
             if (_store != null) return (level, target) => new OperationTimer(level, target, _store);
             lock (_lockObj)
             {
                 if (_store == null)
                 {
-                    _store = new CommonLogStore(log);
+                    _store = new CommonLogStore(loggerFactory);
                 }
             }
             return (level, target) => new OperationTimer(level, target, _store);

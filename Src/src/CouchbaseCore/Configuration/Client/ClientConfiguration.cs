@@ -29,6 +29,7 @@ namespace Couchbase.Configuration.Client
     /// </summary>
     public class ClientConfiguration
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger Log;
         protected ReaderWriterLockSlim ConfigLock = new ReaderWriterLockSlim();
         private const string DefaultBucket = "default";
@@ -87,11 +88,12 @@ namespace Couchbase.Configuration.Client
             public static uint IOErrorThreshold = 10;
         }
 
-        public ClientConfiguration(ILogger logger)
+        public ClientConfiguration(ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<ClientConfiguration>();
             //For operation timing
-            Timer = TimingFactory.GetTimer(logger);
+            Timer = TimingFactory.GetTimer(_loggerFactory);
 
             QueryRequestTimeout = Defaults.QueryRequestTimeout;
             UseSsl = Defaults.UseSsl;
@@ -185,10 +187,11 @@ namespace Couchbase.Configuration.Client
         /// For synchronization with App.config or Web.configs.
         /// </summary>
         /// <param name="definition"></param>
-        public ClientConfiguration(ICouchbaseClientDefinition definition, ILogger logger)
+        public ClientConfiguration(ICouchbaseClientDefinition definition, ILoggerFactory loggerFactory)
         {
-            Log = logger;
-            Timer = TimingFactory.GetTimer(logger);
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<ClientConfiguration>();
+            Timer = TimingFactory.GetTimer(_loggerFactory);
             NodeAvailableCheckInterval = definition.NodeAvailableCheckInterval;
             UseSsl = definition.UseSsl;
             SslPort = definition.SslPort;
@@ -530,7 +533,7 @@ namespace Couchbase.Configuration.Client
         /// The io service.
         /// </value>
         [JsonIgnore]
-        public Func<IConnectionPool, ILogger, IIOService> IOServiceCreator { get; set; }
+        public Func<IConnectionPool, ILoggerFactory, IIOService> IOServiceCreator { get; set; }
 
         /// <summary>
         /// Gets or sets the connection pool creator.

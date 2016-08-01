@@ -20,19 +20,21 @@ namespace Couchbase.Configuration.Server.Providers.Streaming
     /// </summary>
     internal class HttpServerConfig : IServerConfig
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger Log;
         private readonly ClientConfiguration _clientConfig;
         private readonly HttpClient _httpClient;
         private readonly string _bucketName;
 
-        public HttpServerConfig(ClientConfiguration clientConfig, ILogger logger)
-            : this(clientConfig, "default", string.Empty, logger)
+        public HttpServerConfig(ClientConfiguration clientConfig, ILoggerFactory loggerFactory)
+            : this(clientConfig, "default", string.Empty, loggerFactory)
         {
         }
 
-        public HttpServerConfig(ClientConfiguration clientConfig, string bucketName, string password, ILogger logger)
+        public HttpServerConfig(ClientConfiguration clientConfig, string bucketName, string password, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<HttpServerConfig>();
             _clientConfig = clientConfig;
             _bucketName = bucketName;
 

@@ -21,6 +21,7 @@ namespace Couchbase
     /// <remarks>Call <see cref="Initialize()"/> before calling <see cref="Get()"/> to get the instance.</remarks>
     public class ClusterHelper
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger Log;
         private const string DefaultBucket = "default";
         private static Lazy<Cluster> _instance;
@@ -37,18 +38,19 @@ namespace Couchbase
         /// <remarks>
         /// This is the default configuration and will attempt to bootstrap off of localhost.
         /// </remarks>
-        public ClusterHelper(ILogger logger)
-            : this(new ClientConfiguration(logger), logger)
+        public ClusterHelper(ILoggerFactory loggerFactory)
+            : this(new ClientConfiguration(loggerFactory), loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            //Log = _loggerFactory.CreateLogger<ClusterHelper>();
         }
 
         /// <summary>
         /// Ctor for creating Cluster instance.
         /// </summary>
         /// <param name="configuration">The ClientCOnfiguration to use for initialization.</param>
-        public ClusterHelper(ClientConfiguration configuration, ILogger logger)
-            : this(configuration, new ClusterController(configuration, logger), logger)
+        public ClusterHelper(ClientConfiguration configuration, ILoggerFactory loggerFactory)
+            : this(configuration, new ClusterController(configuration, loggerFactory), loggerFactory)
         {
         }
 
@@ -60,9 +62,10 @@ namespace Couchbase
         /// <remarks>
         /// This overload is primarly added for testing.
         /// </remarks>
-        internal ClusterHelper(ClientConfiguration configuration, IClusterController clusterManager, ILogger logger)
+        internal ClusterHelper(ClientConfiguration configuration, IClusterController clusterManager, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<ClusterHelper>();
             _configuration = configuration;
             _clusterManager = clusterManager;
         }
@@ -190,7 +193,7 @@ namespace Couchbase
         /// <remarks>
         /// This is an heavy-weight object intended to be long-lived. Create one per process or App.Domain.
         /// </remarks>
-        public static void Initialize(ClientConfiguration configuration, ILogger logger)
+        public static void Initialize(ClientConfiguration configuration, ILoggerFactory loggerFactory)
         {
             if (configuration == null)
             {
@@ -198,7 +201,7 @@ namespace Couchbase
             }
 
             configuration.Initialize();
-            var factory = new Func<Cluster>(() => new Cluster(configuration, logger));
+            var factory = new Func<Cluster>(() => new Cluster(configuration, loggerFactory));
             Initialize(factory);
         }
 
@@ -208,9 +211,9 @@ namespace Couchbase
         /// and Memcached ports.
         /// <see cref="http://docs.couchbase.com/couchbase-manual-2.5/cb-install/#network-ports" />
         /// </summary>
-        public static void Initialize(ILogger logger)
+        public static void Initialize(ILoggerFactory loggerFactory)
         {
-            var factory = new Func<Cluster>(() => new Cluster(logger));
+            var factory = new Func<Cluster>(() => new Cluster(loggerFactory));
             Initialize(factory);
         }
 
@@ -218,12 +221,12 @@ namespace Couchbase
         /// Ctor for creating Cluster instance.
         /// </summary>
         /// <param name="definition">The configuration definition loaded from a configuration file.</param>
-        public static void Initialize(ICouchbaseClientDefinition definition, ILogger logger)
+        public static void Initialize(ICouchbaseClientDefinition definition, ILoggerFactory loggerFactory)
         {
-            var configuration = new ClientConfiguration(definition, logger);
+            var configuration = new ClientConfiguration(definition, loggerFactory);
             configuration.Initialize();
 
-            var factory = new Func<Cluster>(() => new Cluster(configuration, logger));
+            var factory = new Func<Cluster>(() => new Cluster(configuration, loggerFactory));
             Initialize(factory);
         }
 

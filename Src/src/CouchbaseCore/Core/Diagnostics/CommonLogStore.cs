@@ -5,9 +5,9 @@ namespace Couchbase.Core.Diagnostics
     public class CommonLogStore : ITimingStore
     {
         private readonly ILogger _log;
-        public CommonLogStore(ILogger log)
+        public CommonLogStore(ILoggerFactory loggerFactory)
         {
-            _log = log;
+            _log = loggerFactory.CreateLogger<CommonLogStore>();
         }
 
         public void Write(string format, params object[] args)

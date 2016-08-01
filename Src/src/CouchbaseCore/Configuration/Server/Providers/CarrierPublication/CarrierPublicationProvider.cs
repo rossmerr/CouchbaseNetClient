@@ -23,13 +23,13 @@ namespace Couchbase.Configuration.Server.Providers.CarrierPublication
         private Timer _heartBeat;
 
         public CarrierPublicationProvider(ClientConfiguration clientConfig,
-            Func<IConnectionPool, ILogger, IIOService> ioServiceFactory,
+            Func<IConnectionPool, ILoggerFactory, IIOService> ioServiceFactory,
             Func<PoolConfiguration, IPEndPoint, IConnectionPool> connectionPoolFactory,
             Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> saslFactory,
             IByteConverter converter,
             ITypeTranscoder transcoder,
-            ILogger logger)
-            : base(clientConfig, ioServiceFactory, connectionPoolFactory, saslFactory, converter, transcoder, logger)
+            ILoggerFactory loggerFactory)
+            : base(clientConfig, ioServiceFactory, connectionPoolFactory, saslFactory, converter, transcoder, loggerFactory)
         {
 
             AutoResetEvent autoEvent = new AutoResetEvent(false);
@@ -117,7 +117,7 @@ namespace Couchbase.Configuration.Server.Providers.CarrierPublication
                     var poolConfig = bucketConfiguration.ClonePoolConfiguration(server);
                     var connectionPool = ConnectionPoolFactory(poolConfig, endPoint);
 
-                    ioService = IOServiceFactory(connectionPool, Log);
+                    ioService = IOServiceFactory(connectionPool, _loggerFactory);
                     var saslMechanism = SaslFactory(bucketName, password, ioService, Transcoder);
                     ioService.SaslMechanism = saslMechanism;
 
@@ -134,7 +134,7 @@ namespace Couchbase.Configuration.Server.Providers.CarrierPublication
                             IOServiceFactory,
                             ConnectionPoolFactory,
                             SaslFactory,
-                            Transcoder, Log);
+                            Transcoder, _loggerFactory);
 
                         Log.LogInformation("Bootstrap config: {0}", JsonConvert.SerializeObject(bucketConfig));
 

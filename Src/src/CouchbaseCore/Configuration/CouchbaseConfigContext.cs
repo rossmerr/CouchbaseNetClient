@@ -22,18 +22,20 @@ namespace Couchbase.Configuration
     /// </summary>
     internal sealed class CouchbaseConfigContext : ConfigContextBase
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger Log;
 
         public CouchbaseConfigContext(IBucketConfig bucketConfig, ClientConfiguration clientConfig,
-            Func<IConnectionPool, ILogger, IIOService> ioServiceFactory,
+            Func<IConnectionPool, ILoggerFactory, IIOService> ioServiceFactory,
             Func<PoolConfiguration, IPEndPoint, IConnectionPool> connectionPoolFactory,
             Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> saslFactory,
-            ITypeTranscoder transcoder, ILogger logger )
-            : base(bucketConfig, clientConfig, ioServiceFactory, connectionPoolFactory, saslFactory, transcoder, logger)
+            ITypeTranscoder transcoder, ILoggerFactory loggerFactory)
+            : base(bucketConfig, clientConfig, ioServiceFactory, connectionPoolFactory, saslFactory, transcoder, loggerFactory)
         {
             //for caching query plans
             QueryCache = new ConcurrentDictionary<string, QueryPlan>();
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<CouchbaseConfigContext>();
         }
 
         /// <summary>
@@ -81,7 +83,7 @@ namespace Couchbase.Configuration
                                 var poolConfiguration = ClientConfig.BucketConfigs[BucketConfig.Name].ClonePoolConfiguration(uri);
                                 var connectionPool = ConnectionPoolFactory(poolConfiguration.Clone(uri), endpoint);
 
-                                var ioService = IOServiceFactory(connectionPool, Log);
+                                var ioService = IOServiceFactory(connectionPool, _loggerFactory);
 
                                 server = new Core.Server(ioService, adapter, ClientConfig, bucketConfig, Transcoder, QueryCache, Log)
                                 {
@@ -204,7 +206,7 @@ namespace Couchbase.Configuration
                                 var poolConfiguration = ClientConfig.BucketConfigs[BucketConfig.Name].ClonePoolConfiguration(uri);
                                 var connectionPool = ConnectionPoolFactory(poolConfiguration.Clone(uri), endpoint);
 
-                                var newIoService = IOServiceFactory(connectionPool, Log);
+                                var newIoService = IOServiceFactory(connectionPool, _loggerFactory);
 
                                 server = new Core.Server(newIoService, adapter, ClientConfig, BucketConfig, Transcoder, QueryCache, Log)
                                 {
@@ -291,7 +293,7 @@ namespace Couchbase.Configuration
                             var poolConfiguration = ClientConfig.BucketConfigs[BucketConfig.Name].ClonePoolConfiguration(uri);
                             var connectionPool = ConnectionPoolFactory(poolConfiguration.Clone(uri), endpoint);
 
-                            var newIoService = IOServiceFactory(connectionPool, Log);
+                            var newIoService = IOServiceFactory(connectionPool, _loggerFactory);
 
                             server = new Core.Server(newIoService, adapter, ClientConfig, BucketConfig, Transcoder, QueryCache, Log)
                             {
