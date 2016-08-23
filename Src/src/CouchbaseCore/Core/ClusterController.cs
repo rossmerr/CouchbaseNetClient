@@ -156,7 +156,7 @@ namespace Couchbase.Core
                         {
                             case NodeLocatorEnum.VBucket:
                                 bucket = _buckets.GetOrAdd(bucketName,
-                                    name => new CouchbaseBucket(this, bucketName, Converter, Transcoder, Log));
+                                    name => new CouchbaseBucket(this, bucketName, Converter, Transcoder, _loggerFactory));
                                 refCountable = bucket as IRefCountable;
                                 if (refCountable != null)
                                 {
@@ -166,7 +166,7 @@ namespace Couchbase.Core
 
                             case NodeLocatorEnum.Ketama:
                                 bucket = _buckets.GetOrAdd(bucketName,
-                                    name => new MemcachedBucket(this, bucketName, Converter, Transcoder, Log));
+                                    name => new MemcachedBucket(this, bucketName, Converter, Transcoder, _loggerFactory));
                                 refCountable = bucket as IRefCountable;
                                 if (refCountable != null)
                                 {

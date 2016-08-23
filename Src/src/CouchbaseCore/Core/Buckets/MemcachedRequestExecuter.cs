@@ -17,11 +17,9 @@ namespace Couchbase.Core.Buckets
     /// Methods that are not implemented may throw a <see cref="NotSupportedException"/>.</remarks>
     internal class MemcachedRequestExecuter : RequestExecuterBase
     {
-        protected readonly ILogger Log;
-
         public MemcachedRequestExecuter(IClusterController clusterController, IConfigInfo configInfo,
-            string bucketName, ConcurrentDictionary<uint, IOperation> pending, ILogger logger)
-            : base(clusterController, configInfo, bucketName, pending, logger)
+            string bucketName, ConcurrentDictionary<uint, IOperation> pending, ILoggerFactory loggerFactory)
+            : base(clusterController, configInfo, bucketName, pending, loggerFactory)
         {
         }
 

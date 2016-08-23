@@ -32,6 +32,7 @@ namespace Couchbase
     /// <seealso cref="Couchbase.IRefCountable" />
     public class MemcachedBucket : IBucket, IConfigObserver, IRefCountable
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger Log;
         private readonly IClusterController _clusterController;
         private IConfigInfo _configInfo;
@@ -56,9 +57,10 @@ namespace Couchbase
         }
 
         internal MemcachedBucket(IClusterController clusterController, string bucketName, IByteConverter converter,
-            ITypeTranscoder transcoder, ILogger logger)
+            ITypeTranscoder transcoder, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = _loggerFactory.CreateLogger<MemcachedBucket>();
             _clusterController = clusterController;
             _converter = converter;
             _transcoder = transcoder;
@@ -144,7 +146,7 @@ namespace Couchbase
                 _configInfo != null ? _configInfo.BucketConfig.Rev : 0, configInfo.BucketConfig.Rev);
             Interlocked.Exchange(ref _configInfo, configInfo);
             Interlocked.Exchange(ref _requestExecuter,
-                new MemcachedRequestExecuter(_clusterController, _configInfo, Name, _pending, Log));
+                new MemcachedRequestExecuter(_clusterController, _configInfo, Name, _pending, _loggerFactory));
         }
 
         /// <summary>

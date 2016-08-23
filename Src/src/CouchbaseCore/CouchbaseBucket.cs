@@ -42,6 +42,7 @@ namespace Couchbase
     /// <seealso cref="Couchbase.Core.IO.SubDocument.ISubdocInvoker" />
     public sealed class CouchbaseBucket : IBucket, IConfigObserver, IRefCountable, IQueryCacheInvalidator, ISubdocInvoker
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger Log;
         private readonly IClusterController _clusterController;
         private IConfigInfo _configInfo;
@@ -63,9 +64,10 @@ namespace Couchbase
             public int Count;
         }
 
-        internal CouchbaseBucket(IClusterController clusterController, string bucketName, IByteConverter converter, ITypeTranscoder transcoder, ILogger logger)
+        internal CouchbaseBucket(IClusterController clusterController, string bucketName, IByteConverter converter, ITypeTranscoder transcoder, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            Log = loggerFactory.CreateLogger<CouchbaseBucket>();
             _clusterController = clusterController;
             _converter = converter;
             _transcoder = transcoder;
@@ -124,7 +126,7 @@ namespace Couchbase
                 0, configInfo.BucketConfig.Rev);
             Interlocked.Exchange(ref _configInfo, configInfo);
             Interlocked.Exchange(ref _requestExecuter,
-                new CouchbaseRequestExecuter(_clusterController, _configInfo, Name, _pending, Log));
+                new CouchbaseRequestExecuter(_clusterController, _configInfo, Name, _pending, _loggerFactory));
         }
 
         IServer GetServer(string key, out IVBucket vBucket)

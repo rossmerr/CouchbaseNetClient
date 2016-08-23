@@ -27,9 +27,9 @@ namespace Couchbase.Core.Buckets
         protected volatile bool TimingEnabled;
         protected readonly ConcurrentDictionary<uint, IOperation> Pending;
 
-        protected RequestExecuterBase(IClusterController clusterController, IConfigInfo configInfo, string bucketName, ConcurrentDictionary<uint, IOperation> pending, ILogger logger)
+        protected RequestExecuterBase(IClusterController clusterController, IConfigInfo configInfo, string bucketName, ConcurrentDictionary<uint, IOperation> pending, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            Log = loggerFactory.CreateLogger<RequestExecuterBase>();
             ClusterController = clusterController;
             TimingEnabled = ClusterController.Configuration.EnableOperationTiming;
             BucketName = bucketName;

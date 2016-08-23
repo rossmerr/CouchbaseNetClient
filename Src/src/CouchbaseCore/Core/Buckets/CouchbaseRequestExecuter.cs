@@ -28,12 +28,11 @@ namespace Couchbase.Core.Buckets
     /// </summary>
     internal class CouchbaseRequestExecuter : RequestExecuterBase
     {
-        protected readonly ILogger Log;
         private object _syncObj = new object();
 
         public CouchbaseRequestExecuter(IClusterController clusterController, IConfigInfo configInfo,
-            string bucketName, ConcurrentDictionary<uint, IOperation> pending, ILogger logger)
-            : base(clusterController, configInfo, bucketName, pending, logger)
+            string bucketName, ConcurrentDictionary<uint, IOperation> pending, ILoggerFactory loggerFactory)
+            : base(clusterController, configInfo, bucketName, pending, loggerFactory)
         {
         }
 
