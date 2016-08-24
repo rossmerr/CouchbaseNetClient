@@ -356,9 +356,13 @@ namespace Couchbase.IO
                     {
                         Socket.Shutdown(SocketShutdown.Both);
                         //Socket.Close(ConnectionPool.Configuration.ShutdownTimeout);
+
+                        //https://github.com/npgsql/npgsql/issues/471#issuecomment-94104090
+                        Socket.Dispose();
                     }
                     else
                     {
+                        //https://github.com/npgsql/npgsql/issues/471#issuecomment-94104090
                         //Socket.Close();
                         Socket.Dispose();
                     }

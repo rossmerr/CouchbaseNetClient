@@ -275,6 +275,8 @@ namespace Couchbase.IO
                     IsDead = true;
                     //todo might me wrong was close
                     //Socket.Close();
+                    // https://github.com/npgsql/npgsql/issues/471#issuecomment-94104090
+                    Socket.Dispose();
                 }
 
                 //free up all states in flight
@@ -304,10 +306,15 @@ namespace Couchbase.IO
                     {
                         Socket.Shutdown(SocketShutdown.Both);
                         //Socket.Close(ConnectionPool.Configuration.ShutdownTimeout);
+                        // https://github.com/npgsql/npgsql/issues/471#issuecomment-94104090
+                        Socket.Dispose();
+
                     }
                     else
                     {
-                      //  Socket.Close();
+                        //  Socket.Close();
+                        // https://github.com/npgsql/npgsql/issues/471#issuecomment-94104090
+
                         Socket.Dispose();
                     }
                 }
