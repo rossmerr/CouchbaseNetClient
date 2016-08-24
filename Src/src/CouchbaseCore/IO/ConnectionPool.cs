@@ -137,18 +137,21 @@ namespace Couchbase.IO
         public T Acquire()
         {
             T connection = AcquireFromPool();
+            System.Console.WriteLine("1.1");
 
             if (connection != null)
                 return connection;
 
             lock (_lock)
             {
+                System.Console.WriteLine("1.2");
                 //try to get connection from pool
                 //in case connection released while operation waited in Monitor.Enter (lock)
                 connection = AcquireFromPool();
+                
                 if (connection != null)
                     return connection;
-
+                System.Console.WriteLine("1.3");
                 if (_count < _configuration.MaxSize && !_disposed)
                 {
                     Log.LogInformation("Trying to acquire new connection!");
@@ -164,15 +167,20 @@ namespace Couchbase.IO
                     return connection;
                 }
             }
+            System.Console.WriteLine("1.4");
 
             _autoResetEvent.WaitOne(_configuration.WaitTimeout);
+            System.Console.WriteLine("1.5");
             var acquireFailedCount = Interlocked.Increment(ref _acquireFailedCount);
+            System.Console.WriteLine("1.6");
             if (acquireFailedCount >= _configuration.MaxAcquireIterationCount)
             {
+                System.Console.WriteLine("1.7");
                 Interlocked.Exchange(ref _acquireFailedCount, 0);
                 const string msg = "Failed to acquire a pooled client connection on {0} after {1} tries.";
                 throw new ConnectionUnavailableException(msg, EndPoint, acquireFailedCount);
             }
+            System.Console.WriteLine("1.8");
             return Acquire();
         }
 
@@ -186,10 +194,12 @@ namespace Couchbase.IO
 
             if (_store.TryDequeue(out connection) && !_disposed)
             {
+                System.Console.WriteLine("2.1");
                 Interlocked.Exchange(ref _acquireFailedCount, 0);
+                System.Console.WriteLine("2.2");
                 Log.LogDebug("Acquire existing: {0} | {1} | [{2}, {3}] - {4} - Disposed: {5}",
                     connection.Identity, EndPoint, _store.Count, _count, _identity, _disposed);
-
+                System.Console.WriteLine("2.3");
                 connection.MarkUsed(true);
                 return connection;
             }
