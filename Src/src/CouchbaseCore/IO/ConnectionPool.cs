@@ -154,16 +154,22 @@ namespace Couchbase.IO
                 System.Console.WriteLine("1.3");
                 if (_count < _configuration.MaxSize && !_disposed)
                 {
+                    System.Console.WriteLine("1.3.1");
                     Log.LogInformation("Trying to acquire new connection!");
+                    System.Console.WriteLine("1.3.2");
                     connection = _factory(this, _converter, _bufferAllocator);
+                    System.Console.WriteLine("1.3.3");
                     _refs.TryAdd(connection.Identity, connection);
-
+                    System.Console.WriteLine("1.3.4");
                     Log.LogInformation("Acquire new: {0} | {1} | [{2}, {3}] - {4} - Disposed: {5}",
                         connection.Identity, EndPoint, _store.Count, _count, _identity, _disposed);
-
+                    System.Console.WriteLine("1.3.5");
                     Interlocked.Increment(ref _count);
+                    System.Console.WriteLine("1.3.6");
                     Interlocked.Exchange(ref _acquireFailedCount, 0);
+                    System.Console.WriteLine("1.3.7");
                     connection.MarkUsed(true);
+                    System.Console.WriteLine("1.3.8");
                     return connection;
                 }
             }
