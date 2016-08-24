@@ -49,23 +49,33 @@ namespace Couchbase.IO
         /// <returns>True if the bucket was set.</returns>
         public virtual bool SetBuffer(SocketAsyncEventArgs eventArgs)
         {
+            System.Console.WriteLine(nameof(BufferAllocator));
             lock (_freeIndexPool)
             {
+                System.Console.WriteLine(nameof(BufferAllocator) + " EnsureBufferAllocated");
                 EnsureBufferAllocated();
 
                 var isBufferSet = true;
+                System.Console.WriteLine(nameof(BufferAllocator) + " _freeIndexPool " + _freeIndexPool.Count);
+
                 if (_freeIndexPool.Count > 0)
                 {
+                    System.Console.WriteLine(nameof(BufferAllocator) + " SetBuffer " + _bufferSize);
+
                     eventArgs.SetBuffer(_buffer, _freeIndexPool.Pop(), _bufferSize);
                 }
                 else
                 {
                     if ((_numberOfBytes - _bufferSize) < _currentIndex)
                     {
+                        System.Console.WriteLine(nameof(BufferAllocator) + " isBufferSet false " + _numberOfBytes + " " + _bufferSize + " " + _currentIndex);
+
                         isBufferSet = false;
                     }
                     else
                     {
+                        System.Console.WriteLine(nameof(BufferAllocator) + " isBufferSet true " + _buffer + " " + _currentIndex + " " + _bufferSize);
+
                         eventArgs.SetBuffer(_buffer, _currentIndex, _bufferSize);
                         _currentIndex += _bufferSize;
                     }

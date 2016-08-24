@@ -384,6 +384,8 @@ namespace Couchbase.IO
                 // even if other steps fail.  Otherwise we will run out of buffers when the ConnectionPool reaches
                 // its maximum size.
 
+                System.Console.WriteLine("ReleaseBuffer");
+
                 BufferAllocator.ReleaseBuffer(_eventArgs);
             }
             catch (Exception e)
