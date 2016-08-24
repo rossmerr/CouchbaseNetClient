@@ -23,27 +23,31 @@ namespace Couchbase.Authentication.SASL
         {
             return (username, password, service, transcoder) =>
             {
-                if (loggerFactory == null)
-                    System.Console.WriteLine("loggerFactory is null");
-
                 var logger = loggerFactory.CreateLogger("Couchbase.Authentication.SASL." + nameof(SaslFactory));
 
                 ISaslMechanism saslMechanism = null;
                 IConnection connection = null;
                 try
                 {
-                    connection = service.ConnectionPool.Acquire(); 
+                    System.Console.WriteLine("1");
+                    connection = service.ConnectionPool.Acquire();
+                    System.Console.WriteLine("2");
                     var saslListResult = service.Execute(new SaslList(transcoder, DefaultTimeout), connection);
+                    System.Console.WriteLine("3");
                     if (saslListResult.Success)
                     {
+                        System.Console.WriteLine("4");
                         if (saslListResult.Value.Contains("CRAM-MD5"))
                         {
+                            System.Console.WriteLine("5");
                             saslMechanism = new CramMd5Mechanism(service, username, password, transcoder, loggerFactory);
                         }
                         else
                         {
+                            System.Console.WriteLine("6");
                             saslMechanism = new PlainTextMechanism(service, username, password, transcoder, loggerFactory);
                         }
+                        System.Console.WriteLine("7");
                     }
                 }
                 catch (Exception e)
@@ -54,6 +58,7 @@ namespace Couchbase.Authentication.SASL
                 {
                     if (connection != null)
                     {
+                        System.Console.WriteLine("8");
                         service.ConnectionPool.Release(connection);
                     }
                 }
