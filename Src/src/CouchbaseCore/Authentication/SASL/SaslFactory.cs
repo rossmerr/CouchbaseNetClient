@@ -23,13 +23,16 @@ namespace Couchbase.Authentication.SASL
         {
             return (username, password, service, transcoder) =>
             {
+                if (loggerFactory == null)
+                    System.Console.WriteLine("loggerFactory is null");
+
                 var logger = loggerFactory.CreateLogger("Couchbase.Authentication.SASL." + nameof(SaslFactory));
 
                 ISaslMechanism saslMechanism = null;
                 IConnection connection = null;
                 try
                 {
-                    connection = service.ConnectionPool.Acquire();
+                    connection = service.ConnectionPool.Acquire(); 
                     var saslListResult = service.Execute(new SaslList(transcoder, DefaultTimeout), connection);
                     if (saslListResult.Success)
                     {
