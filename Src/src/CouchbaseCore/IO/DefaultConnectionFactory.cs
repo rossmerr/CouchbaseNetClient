@@ -26,51 +26,64 @@ namespace Couchbase.IO
         {
             Func<IConnectionPool<T>, IByteConverter, BufferAllocator, T> factory = (p, c, b) =>
             {
-
+                System.Console.WriteLine("1.3.2.1");
                 var socket = new Socket(p.EndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
+                System.Console.WriteLine("1.3.2.2");
                 var waitHandle = new ManualResetEvent(false);
+                System.Console.WriteLine("1.3.2.3");
                 var asyncEventArgs = new SocketAsyncEventArgs
                 {
                     RemoteEndPoint = p.EndPoint
                 };
-                asyncEventArgs.Completed += delegate { waitHandle.Set(); };
 
+                System.Console.WriteLine("1.3.2.4");
+                asyncEventArgs.Completed += delegate { waitHandle.Set(); };
+                System.Console.WriteLine("1.3.2.5");
                 if (socket.ConnectAsync(asyncEventArgs))
                 {
                     // True means the connect command is running asynchronously, so we need to wait for completion
-
+                    System.Console.WriteLine("1.3.2.6");
                     if (!waitHandle.WaitOne(p.Configuration.ConnectTimeout))
                     {
+                        System.Console.WriteLine("1.3.2.7");
                         socket.Dispose();
+                        System.Console.WriteLine("1.3.2.8");
                         const int connectionTimedOut = 10060;
                         throw new SocketException(connectionTimedOut);
                     }
                 }
-
+                System.Console.WriteLine("1.3.2.9");
                 if ((asyncEventArgs.SocketError != SocketError.Success) || !socket.Connected)
                 {
+                    System.Console.WriteLine("1.3.2.10");
                     socket.Dispose();
+                    System.Console.WriteLine("1.3.2.11");
                     throw new SocketException((int) asyncEventArgs.SocketError);
                 }
-
+                System.Console.WriteLine("1.3.2.12");
                 IConnection connection;
                 if (p.Configuration.UseSsl)
                 {
+                    System.Console.WriteLine("1.3.2.13");
                     connection = new SslConnection(p, socket, c, b, loggerFactory);
+                    System.Console.WriteLine("1.3.2.14");
                     connection.Authenticate();
                 }
                 else
                 {
+                    System.Console.WriteLine("1.3.2.15");
                     connection = Activator.CreateInstance(typeof(T), p, socket, c, b, loggerFactory) as T;
                 }
+                System.Console.WriteLine("1.3.2.16");
                 //need to be able to completely disable the feature if false - this should work
                 if (p.Configuration.EnableTcpKeepAlives)
                 {
+                    System.Console.WriteLine("1.3.2.17");
                     socket.SetKeepAlives(p.Configuration.EnableTcpKeepAlives,
                         p.Configuration.TcpKeepAliveTime,
                         p.Configuration.TcpKeepAliveInterval);
                 }
+                System.Console.WriteLine("1.3.2.18");
                 return connection as T;
             };
             return factory;
