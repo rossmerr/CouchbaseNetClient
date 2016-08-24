@@ -23,14 +23,14 @@ namespace Couchbase.IO
         private readonly SslStream _sslStream;
         private volatile bool _timingEnabled;
 
-        internal SslConnection(IConnectionPool connectionPool, Socket socket, IByteConverter converter, BufferAllocator allocator, ILogger logger)
-            : this(connectionPool, socket, new SslStream(new NetworkStream(socket), true), converter, allocator, logger)
+        internal SslConnection(IConnectionPool connectionPool, Socket socket, IByteConverter converter, BufferAllocator allocator, ILoggerFactory loggerFactory)
+            : this(connectionPool, socket, new SslStream(new NetworkStream(socket), true), converter, allocator, loggerFactory)
         {
 
         }
 
-        internal SslConnection(IConnectionPool connectionPool, Socket socket, SslStream sslStream, IByteConverter converter, BufferAllocator allocator, ILogger logger)
-            : base(socket, converter, allocator, logger)
+        internal SslConnection(IConnectionPool connectionPool, Socket socket, SslStream sslStream, IByteConverter converter, BufferAllocator allocator, ILoggerFactory loggerFactory)
+            : base(socket, converter, allocator, loggerFactory)
         {
             ConnectionPool = connectionPool;
             _sslStream = sslStream;

@@ -18,28 +18,28 @@ namespace Couchbase.Authentication.SASL
         private IIOService _service;
         private readonly ITypeTranscoder _transcoder;
 
-        public PlainTextMechanism(IIOService service, ITypeTranscoder transcoder, ILogger logger)
+        public PlainTextMechanism(IIOService service, ITypeTranscoder transcoder, ILoggerFactory loggerFactory)
         {
             _service = service;
             _transcoder = transcoder;
-            Log = logger;
+            Log = loggerFactory.CreateLogger<CramMd5Mechanism>();
         }
 
-        public PlainTextMechanism(string username, string password, ITypeTranscoder transcoder, ILogger logger)
+        public PlainTextMechanism(string username, string password, ITypeTranscoder transcoder, ILoggerFactory loggerFactory)
         {
             Username = username;
             Password = password;
             _transcoder = transcoder;
-            Log = logger;
+            Log = loggerFactory.CreateLogger<CramMd5Mechanism>();
         }
 
-        public PlainTextMechanism(IIOService service, string username, string password, ITypeTranscoder transcoder, ILogger logger)
+        public PlainTextMechanism(IIOService service, string username, string password, ITypeTranscoder transcoder, ILoggerFactory loggerFactory)
         {
             _service = service;
             Username = username;
             Password = password;
             _transcoder = transcoder;
-            Log = logger;
+            Log = loggerFactory.CreateLogger<CramMd5Mechanism>();
         }
 
         /// <summary>

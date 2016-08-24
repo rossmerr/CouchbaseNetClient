@@ -25,11 +25,11 @@ namespace Couchbase.Authentication.SASL
         /// </summary>
         /// <param name="ioService">The I/O service to use.</param>
         /// <param name="transcoder"></param>
-        public CramMd5Mechanism(IIOService ioService, ITypeTranscoder transcoder, ILogger logger)
+        public CramMd5Mechanism(IIOService ioService, ITypeTranscoder transcoder, ILoggerFactory loggerFactory)
         {
             _ioService = ioService;
             _transcoder = transcoder;
-            Log = logger;
+            Log = loggerFactory.CreateLogger<CramMd5Mechanism>();
         }
 
         /// <summary>
@@ -37,9 +37,9 @@ namespace Couchbase.Authentication.SASL
         /// </summary>
         /// <param name="username">The name of the Bucket you are connecting to.</param>
         /// <param name="password">The password for the Bucket.</param>
-        public CramMd5Mechanism(string username, string password, ILogger logger)
+        public CramMd5Mechanism(string username, string password, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            Log = loggerFactory.CreateLogger<CramMd5Mechanism>();
             Username = username;
             Password = password;
         }
@@ -51,9 +51,9 @@ namespace Couchbase.Authentication.SASL
         /// <param name="username">The name of the Bucket you are connecting to.</param>
         /// <param name="password">The password for the Bucket.</param>
         /// <param name="transcoder"></param>
-        public CramMd5Mechanism(IIOService ioService, string username, string password, ITypeTranscoder transcoder, ILogger logger)
+        public CramMd5Mechanism(IIOService ioService, string username, string password, ITypeTranscoder transcoder, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            Log = loggerFactory.CreateLogger<CramMd5Mechanism>();
             _ioService = ioService;
             Username = username;
             Password = password;

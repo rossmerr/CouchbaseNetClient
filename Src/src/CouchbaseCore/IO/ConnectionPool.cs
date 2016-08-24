@@ -31,8 +31,8 @@ namespace Couchbase.IO
         private readonly IServer _owner;
         private readonly BufferAllocator _bufferAllocator;
 
-        internal ConnectionPool(PoolConfiguration configuration, IPEndPoint endPoint, ILogger logger)
-            : this(configuration, endPoint, DefaultConnectionFactory.GetGeneric<T>(logger), new DefaultConverter(), logger)
+        internal ConnectionPool(PoolConfiguration configuration, IPEndPoint endPoint, ILoggerFactory loggerFactory)
+            : this(configuration, endPoint, DefaultConnectionFactory.GetGeneric<T>(loggerFactory), new DefaultConverter(), loggerFactory)
         {
         }
 
@@ -43,14 +43,14 @@ namespace Couchbase.IO
         /// <param name="endPoint">The <see cref="IPEndPoint"/> of the Couchbase Server.</param>
         /// <param name="factory">A functory for creating <see cref="IConnection"/> objects./></param>
         internal ConnectionPool(PoolConfiguration configuration, IPEndPoint endPoint,
-            Func<ConnectionPool<T>, IByteConverter, BufferAllocator, T> factory, IByteConverter converter, ILogger logger)
+            Func<ConnectionPool<T>, IByteConverter, BufferAllocator, T> factory, IByteConverter converter, ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
             _factory = factory;
             _converter = converter;
             _bufferAllocator = Configuration.BufferAllocator(Configuration);
             EndPoint = endPoint;
-            Log = logger;
+            Log = loggerFactory.CreateLogger<ConnectionPool<T>>();
         }
 
         /// <summary>

@@ -19,9 +19,9 @@ namespace Couchbase.IO
         private readonly int _bufferSize;
         private int _currentIndex;
 
-        public BufferAllocator(int totalBytes, int bufferSize, ILogger logger)
+        public BufferAllocator(int totalBytes, int bufferSize, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            Log = loggerFactory.CreateLogger<BufferAllocator>();
             _numberOfBytes = totalBytes;
             _currentIndex = 0;
             _bufferSize = bufferSize;

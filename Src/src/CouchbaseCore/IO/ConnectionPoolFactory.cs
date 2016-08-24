@@ -19,18 +19,18 @@ namespace Couchbase.IO
         /// Gets the factory.
         /// </summary>
         /// <returns></returns>
-        public static Func<PoolConfiguration, IPEndPoint, IConnectionPool> GetFactory(ILogger logger)
+        public static Func<PoolConfiguration, IPEndPoint, IConnectionPool> GetFactory(ILoggerFactory loggerFactory)
         {
             return (config, endpoint) =>
             {
                 IConnectionPool connectionPool;
                 if (config.UseSsl)
                 {
-                    connectionPool = new ConnectionPool<SslConnection>(config, endpoint, logger);
+                    connectionPool = new ConnectionPool<SslConnection>(config, endpoint, loggerFactory);
                 }
                 else
                 {
-                    connectionPool = new ConnectionPool<Connection>(config, endpoint, logger);
+                    connectionPool = new ConnectionPool<Connection>(config, endpoint, loggerFactory);
                 }
                 connectionPool.Initialize();
                 return connectionPool;

@@ -145,15 +145,15 @@ namespace Couchbase.Configuration.Client
             IOServiceCreator = IOServiceFactory.GetFactory();
 
             //the default connection pool creator
-            ConnectionPoolCreator = ConnectionPoolFactory.GetFactory(Log);
+            ConnectionPoolCreator = ConnectionPoolFactory.GetFactory(_loggerFactory);
 
             //The default sasl mechanism creator
-            CreateSaslMechanism = SaslFactory.GetFactory(Log);
+            CreateSaslMechanism = SaslFactory.GetFactory(_loggerFactory);
 
-            PoolConfiguration = new PoolConfiguration(Log, this)
+            PoolConfiguration = new PoolConfiguration(_loggerFactory, this)
             {
                 BufferSize = BufferSize,
-                BufferAllocator = (p) => new BufferAllocator(p.MaxSize * p.BufferSize, p.BufferSize, Log)
+                BufferAllocator = (p) => new BufferAllocator(p.MaxSize * p.BufferSize, p.BufferSize, _loggerFactory)
             };
 
             BucketConfigs = new Dictionary<string, BucketConfiguration>
@@ -244,7 +244,7 @@ namespace Couchbase.Configuration.Client
                                     TcpKeepAliveTime != 2*60*60*1000;
 
             //The default sasl mechanism creator
-            CreateSaslMechanism = SaslFactory.GetFactory(Log);
+            CreateSaslMechanism = SaslFactory.GetFactory(_loggerFactory);
 
             //NOTE: this is a global setting and applies to all instances
             IgnoreRemoteCertificateNameMismatch = definition.IgnoreRemoteCertificateNameMismatch;
@@ -261,7 +261,7 @@ namespace Couchbase.Configuration.Client
             {
                 ConnectionPoolCreator = definition.ConnectionPool.Type != null
                     ? ConnectionPoolFactory.GetFactory(definition.ConnectionPool.Type)
-                    : ConnectionPoolFactory.GetFactory(Log);
+                    : ConnectionPoolFactory.GetFactory(_loggerFactory);
 
                 PoolConfiguration = new PoolConfiguration
                 {
@@ -271,7 +271,7 @@ namespace Couchbase.Configuration.Client
                     ShutdownTimeout = definition.ConnectionPool.ShutdownTimeout,
                     UseSsl = UseSsl ? UseSsl : definition.ConnectionPool.UseSsl,
                     BufferSize = definition.ConnectionPool.BufferSize,
-                    BufferAllocator = (p) => new BufferAllocator(p.MaxSize*p.BufferSize, p.BufferSize, Log),
+                    BufferAllocator = (p) => new BufferAllocator(p.MaxSize*p.BufferSize, p.BufferSize, _loggerFactory),
                     ConnectTimeout = definition.ConnectionPool.ConnectTimeout,
                     SendTimeout = definition.ConnectionPool.SendTimeout,
                     EnableTcpKeepAlives =
@@ -286,8 +286,8 @@ namespace Couchbase.Configuration.Client
             }
             else
             {
-                ConnectionPoolCreator = ConnectionPoolFactory.GetFactory(Log);
-                PoolConfiguration = new PoolConfiguration(Log, this);
+                ConnectionPoolCreator = ConnectionPoolFactory.GetFactory(_loggerFactory);
+                PoolConfiguration = new PoolConfiguration(_loggerFactory, this);
             }
 
             BucketConfigs = new Dictionary<string, BucketConfiguration>();
@@ -318,7 +318,7 @@ namespace Couchbase.Configuration.Client
                             ShutdownTimeout = bucket.ConnectionPool.ShutdownTimeout,
                             UseSsl = bucket.ConnectionPool.UseSsl,
                             BufferSize = bucket.ConnectionPool.BufferSize,
-                            BufferAllocator = (p) => new BufferAllocator(p.MaxSize*p.BufferSize, p.BufferSize, Log),
+                            BufferAllocator = (p) => new BufferAllocator(p.MaxSize*p.BufferSize, p.BufferSize, _loggerFactory),
                             ConnectTimeout = bucket.ConnectionPool.ConnectTimeout,
                             SendTimeout = bucket.ConnectionPool.SendTimeout,
                             EnableTcpKeepAlives =
@@ -848,7 +848,7 @@ namespace Couchbase.Configuration.Client
         {
             if (PoolConfiguration == null)
             {
-                PoolConfiguration = new PoolConfiguration(Log, this);
+                PoolConfiguration = new PoolConfiguration(_loggerFactory, this);
             }
             if (PoolConfiguration.ClientConfiguration == null)
             {

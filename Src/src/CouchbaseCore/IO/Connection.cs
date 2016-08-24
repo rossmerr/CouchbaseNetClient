@@ -15,8 +15,8 @@ namespace Couchbase.IO
         private readonly SocketAsyncEventArgs _eventArgs;
         private readonly AutoResetEvent _requestCompleted = new AutoResetEvent(false);
 
-        public Connection(IConnectionPool connectionPool, Socket socket, IByteConverter converter, BufferAllocator allocator, ILogger logger)
-            : base(socket, converter, allocator, logger)
+        public Connection(IConnectionPool connectionPool, Socket socket, IByteConverter converter, BufferAllocator allocator, ILoggerFactory loggerFactoryr)
+            : base(socket, converter, allocator, loggerFactoryr)
         {
             ConnectionPool = connectionPool;
             Configuration = ConnectionPool.Configuration;

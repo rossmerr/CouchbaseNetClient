@@ -21,7 +21,7 @@ namespace Couchbase.IO
         /// Returns a functory for creating <see cref="Connection"/> objects.
         /// </summary>
         /// <returns>A <see cref="Connection"/> based off of the <see cref="PoolConfiguration"/> of the <see cref="IConnectionPool"/>.</returns>
-        internal static Func<ConnectionPool<T>, IByteConverter, BufferAllocator, T> GetGeneric<T>(ILogger logger)
+        internal static Func<ConnectionPool<T>, IByteConverter, BufferAllocator, T> GetGeneric<T>(ILoggerFactory loggerFactory)
             where T : class, IConnection
         {
             Func<IConnectionPool<T>, IByteConverter, BufferAllocator, T> factory = (p, c, b) =>
@@ -57,12 +57,12 @@ namespace Couchbase.IO
                 IConnection connection;
                 if (p.Configuration.UseSsl)
                 {
-                    connection = new SslConnection(p, socket, c, b, logger);
+                    connection = new SslConnection(p, socket, c, b, loggerFactory);
                     connection.Authenticate();
                 }
                 else
                 {
-                    connection = Activator.CreateInstance(typeof(T), p, socket, c, b, logger) as T;
+                    connection = Activator.CreateInstance(typeof(T), p, socket, c, b, loggerFactory) as T;
                 }
                 //need to be able to completely disable the feature if false - this should work
                 if (p.Configuration.EnableTcpKeepAlives)

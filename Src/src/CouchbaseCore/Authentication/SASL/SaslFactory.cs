@@ -19,10 +19,12 @@ namespace Couchbase.Authentication.SASL
         /// </summary>
         public const uint DefaultTimeout = 2500; //2.5sec
 
-        public static Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> GetFactory(ILogger logger)
+        public static Func<string, string, IIOService, ITypeTranscoder, ISaslMechanism> GetFactory(ILoggerFactory loggerFactory)
         {
             return (username, password, service, transcoder) =>
             {
+                var logger = loggerFactory.CreateLogger("Couchbase.Authentication.SASL." + nameof(SaslFactory));
+
                 ISaslMechanism saslMechanism = null;
                 IConnection connection = null;
                 try
@@ -33,11 +35,11 @@ namespace Couchbase.Authentication.SASL
                     {
                         if (saslListResult.Value.Contains("CRAM-MD5"))
                         {
-                            saslMechanism = new CramMd5Mechanism(service, username, password, transcoder, logger);
+                            saslMechanism = new CramMd5Mechanism(service, username, password, transcoder, loggerFactory);
                         }
                         else
                         {
-                            saslMechanism = new PlainTextMechanism(service, username, password, transcoder, logger);
+                            saslMechanism = new PlainTextMechanism(service, username, password, transcoder, loggerFactory);
                         }
                     }
                 }

@@ -24,7 +24,7 @@ namespace Couchbase.Configuration.Client
     {
         public const int DefaultSendTimeout = 15000;
         public ILogger Log;
-
+        private ILoggerFactory _loggerFactory;
         public static class Defaults
         {
             public const int MaxSize = 2;
@@ -45,9 +45,12 @@ namespace Couchbase.Configuration.Client
             public const bool UseEnhancedDurability = false;
         }
 
-        public PoolConfiguration(ILogger logger = null, ClientConfiguration clientConfiguration = null)
+        public PoolConfiguration(ILoggerFactory loggerFactory = null, ClientConfiguration clientConfiguration = null)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+            if (loggerFactory != null)
+                Log = _loggerFactory.CreateLogger<PoolConfiguration>();
+
             MaxSize = Defaults.MaxSize;
             MinSize = Defaults.MinSize;
             WaitTimeout = Defaults.WaitTimeout;
@@ -67,13 +70,17 @@ namespace Couchbase.Configuration.Client
 
             //in some cases this is needed all the way down the stack
             ClientConfiguration = clientConfiguration;
-            BufferAllocator = (p) => new BufferAllocator(p.MaxSize * p.BufferSize, p.BufferSize, Log);
+            BufferAllocator = (p) => new BufferAllocator(p.MaxSize * p.BufferSize, p.BufferSize, loggerFactory);
         }
 
-        public PoolConfiguration(ILogger logger, int maxSize, int minSize, int waitTimeout, int receiveTimeout, int shutdownTimeout,
+        public PoolConfiguration(ILoggerFactory loggerFactory, int maxSize, int minSize, int waitTimeout, int receiveTimeout, int shutdownTimeout,
             int operationTimeout, int maxAcquireIterationCount, int connectTimeout, ClientConfiguration clientConfiguration = null)
         {
-            Log = logger;
+            _loggerFactory = loggerFactory;
+
+            if (loggerFactory != null)
+                Log = _loggerFactory.CreateLogger<PoolConfiguration>();
+
             //todo enable app.configuration
             MaxSize = maxSize;
             MinSize = minSize;
@@ -84,7 +91,7 @@ namespace Couchbase.Configuration.Client
             MaxAcquireIterationCount = maxAcquireIterationCount;
             ClientConfiguration = clientConfiguration;
             ConnectTimeout = connectTimeout;
-            BufferAllocator = (p) => new BufferAllocator(p.MaxSize * p.BufferSize, p.BufferSize, Log);
+            BufferAllocator = (p) => new BufferAllocator(p.MaxSize * p.BufferSize, p.BufferSize, loggerFactory);
             EnableTcpKeepAlives = true;
             TcpKeepAliveTime = (uint)2 * 60 * 60 * 1000;
             TcpKeepAliveInterval = (uint)1000;
@@ -247,7 +254,7 @@ namespace Couchbase.Configuration.Client
         /// <returns></returns>
         public PoolConfiguration Clone(Uri uri)
         {
-            return new PoolConfiguration(Log, MaxSize, MinSize, WaitTimeout, RecieveTimeout,
+            return new PoolConfiguration(_loggerFactory, MaxSize, MinSize, WaitTimeout, RecieveTimeout,
                 ShutdownTimeout, OperationTimeout, MaxAcquireIterationCount,
                 ConnectTimeout, ClientConfiguration)
             {

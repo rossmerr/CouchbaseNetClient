@@ -27,14 +27,14 @@ namespace Couchbase.IO
         private Timer _timer;
         private int _closeAttempts;
 
-        internal ConnectionBase(Socket socket, IByteConverter converter, BufferAllocator bufferAllocator, ILogger logger)
-            : this(socket, new OperationAsyncState(), converter, bufferAllocator, logger)
+        internal ConnectionBase(Socket socket, IByteConverter converter, BufferAllocator bufferAllocator, ILoggerFactory loggerFactory)
+            : this(socket, new OperationAsyncState(), converter, bufferAllocator, loggerFactory)
         {
         }
 
-        internal ConnectionBase(Socket socket, OperationAsyncState asyncState, IByteConverter converter, BufferAllocator bufferAllocator, ILogger logger)
+        internal ConnectionBase(Socket socket, OperationAsyncState asyncState, IByteConverter converter, BufferAllocator bufferAllocator, ILoggerFactory loggerFactory)
         {
-            Log = logger;
+            Log = loggerFactory.CreateLogger<ConnectionBase>();
             _socket = socket;
             _state = asyncState;
             Converter = converter;

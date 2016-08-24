@@ -25,10 +25,10 @@ namespace Couchbase.IO
         private int _receiveBufferLength;
 
         internal MultiplexingConnection(IConnectionPool connectionPool, Socket socket, IByteConverter converter,
-            BufferAllocator allocator, ILogger logger)
-            : base(socket, converter, allocator, logger)
+            BufferAllocator allocator, ILoggerFactory loggerFactory)
+            : base(socket, converter, allocator, loggerFactory)
         {
-            Log = logger;
+            Log = loggerFactory.CreateLogger<MultiplexingConnection>();
             ConnectionPool = connectionPool;
             Configuration = ConnectionPool.Configuration;
 
