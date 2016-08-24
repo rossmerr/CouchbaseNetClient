@@ -28,7 +28,6 @@ namespace Couchbase.IO
             BufferAllocator allocator, ILoggerFactory loggerFactory)
             : base(socket, converter, allocator, loggerFactory)
         {
-            Log = loggerFactory.CreateLogger<MultiplexingConnection>();
             ConnectionPool = connectionPool;
             Configuration = ConnectionPool.Configuration;
 
