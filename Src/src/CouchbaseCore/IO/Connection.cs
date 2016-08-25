@@ -326,23 +326,28 @@ namespace Couchbase.IO
             }
         }
 
-#if DEBUG
         /// <summary>
         /// Cleans up any non-reclaimed resources.
         /// </summary>
         /// <remarks>will run if Dispose is not called on a Connection instance.</remarks>
         ~Connection()
         {
+            System.Console.WriteLine(nameof(Connection) + " Destructor ");
+
             Dispose();
             Log.LogDebug("Finalizing {0}", GetType().Name);
         }
-#endif
+
 
         /// <summary>
         /// Disposes the underlying socket and other objects used by this instance.
         /// </summary>
         public override void Dispose()
         {
+            System.Console.WriteLine(nameof(Connection) + " Dispose");
+
+            System.Console.WriteLine(nameof(Connection) + " Dispose " + Disposed + " " + InUse + " " +  IsDead);
+
             Log.LogDebug("Disposing {0}", _identity);
             if (Disposed || InUse && !IsDead) return;
             Disposed = true;
@@ -384,7 +389,7 @@ namespace Couchbase.IO
                 // even if other steps fail.  Otherwise we will run out of buffers when the ConnectionPool reaches
                 // its maximum size.
 
-                System.Console.WriteLine("ReleaseBuffer");
+                System.Console.WriteLine(nameof(Connection) + " ReleaseBuffer");
 
                 BufferAllocator.ReleaseBuffer(_eventArgs);
             }

@@ -52,29 +52,30 @@ namespace Couchbase.IO
             System.Console.WriteLine(nameof(BufferAllocator));
             lock (_freeIndexPool)
             {
-                System.Console.WriteLine(nameof(BufferAllocator) + " EnsureBufferAllocated");
                 EnsureBufferAllocated();
 
                 var isBufferSet = true;
-                System.Console.WriteLine(nameof(BufferAllocator) + " _freeIndexPool " + _freeIndexPool.Count);
+
+                System.Console.WriteLine(nameof(BufferAllocator) + " _freeIndexPool.Count " + _freeIndexPool.Count);
+                System.Console.WriteLine(nameof(BufferAllocator) + " _numberOfBytes " + _numberOfBytes );
+                System.Console.WriteLine(nameof(BufferAllocator) + " _bufferSize " + _bufferSize );
+                System.Console.WriteLine(nameof(BufferAllocator) + " _currentIndex " + _currentIndex);
 
                 if (_freeIndexPool.Count > 0)
                 {
-                    System.Console.WriteLine(nameof(BufferAllocator) + " SetBuffer " + _bufferSize);
-
                     eventArgs.SetBuffer(_buffer, _freeIndexPool.Pop(), _bufferSize);
                 }
                 else
                 {
                     if ((_numberOfBytes - _bufferSize) < _currentIndex)
                     {
-                        System.Console.WriteLine(nameof(BufferAllocator) + " isBufferSet false " + _numberOfBytes + " " + _bufferSize + " " + _currentIndex);
+                       System.Console.WriteLine(nameof(BufferAllocator) + " isBufferSet false ");
 
                         isBufferSet = false;
                     }
                     else
                     {
-                        System.Console.WriteLine(nameof(BufferAllocator) + " isBufferSet true " + _buffer + " " + _currentIndex + " " + _bufferSize);
+                        System.Console.WriteLine(nameof(BufferAllocator) + " isBufferSet true " );
 
                         eventArgs.SetBuffer(_buffer, _currentIndex, _bufferSize);
                         _currentIndex += _bufferSize;
@@ -90,6 +91,8 @@ namespace Couchbase.IO
         /// <returns>The <see cref="IOBuffer"/>, or null if no buffer is available.</returns>
         public virtual IOBuffer GetBuffer()
         {
+            System.Console.WriteLine(nameof(Connection) + " GetBuffer");
+
             lock (_freeIndexPool)
             {
                 EnsureBufferAllocated();
@@ -136,6 +139,8 @@ namespace Couchbase.IO
             {
                 try
                 {
+                    System.Console.WriteLine(nameof(BufferAllocator) + " offset " + offset);
+
                     _freeIndexPool.Push(offset);
                 }
                 catch (Exception e)

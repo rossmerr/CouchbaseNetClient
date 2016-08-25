@@ -29,8 +29,6 @@ namespace Couchbase.Authentication.SASL
                 IConnection connection = null;
                 try
                 {                    
-                    System.Console.WriteLine("1" + service != null);
-                    System.Console.WriteLine("2" + service.ConnectionPool != null);
                     connection = service.ConnectionPool.Acquire();
                     
                     var saslListResult = service.Execute(new SaslList(transcoder, DefaultTimeout), connection);
