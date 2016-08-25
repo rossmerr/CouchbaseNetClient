@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
+using Couchbase.Configuration.Server.Serialization;
 using Microsoft.Extensions.Logging;
 
 namespace Couchbase.IO
@@ -55,7 +57,7 @@ namespace Couchbase.IO
                 EnsureBufferAllocated();
 
                 var isBufferSet = true;
-
+                System.Console.WriteLine(nameof(BufferAllocator) + " port " + ((IPEndPoint)eventArgs.AcceptSocket.LocalEndPoint).Port);
                 System.Console.WriteLine(nameof(BufferAllocator) + " _freeIndexPool.Count " + _freeIndexPool.Count);
                 System.Console.WriteLine(nameof(BufferAllocator) + " _numberOfBytes " + _numberOfBytes );
                 System.Console.WriteLine(nameof(BufferAllocator) + " _bufferSize " + _bufferSize );
