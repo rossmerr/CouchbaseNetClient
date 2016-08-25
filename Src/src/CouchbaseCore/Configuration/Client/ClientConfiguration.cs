@@ -90,6 +90,8 @@ namespace Couchbase.Configuration.Client
 
         public ClientConfiguration(ILoggerFactory loggerFactory)
         {
+            System.Console.WriteLine(nameof(ClientConfiguration) + " 1");
+
             _loggerFactory = loggerFactory;
             Log = _loggerFactory.CreateLogger<ClientConfiguration>();
             //For operation timing
@@ -189,6 +191,8 @@ namespace Couchbase.Configuration.Client
         /// <param name="definition"></param>
         public ClientConfiguration(ICouchbaseClientDefinition definition, ILoggerFactory loggerFactory)
         {
+            System.Console.WriteLine(nameof(ClientConfiguration) + " 2");
+
             _loggerFactory = loggerFactory;
             Log = _loggerFactory.CreateLogger<ClientConfiguration>();
             Timer = TimingFactory.GetTimer(_loggerFactory);
