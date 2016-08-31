@@ -5,3 +5,7 @@
 https://www.myget.org/F/caudex/api/v3/index.json
 
 A Build of the CouchbaseNetClient for dot.net core
+
+### Linux ###
+
+Under linux dotnet core does not support socket Keep alive, so under the ClientConfiguration you need to set the Enable Tcp KeepAlive to false.
