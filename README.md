@@ -8,4 +8,4 @@ A Build of the CouchbaseNetClient for dot.net core
 
 ### Linux ###
 
-Under linux dotnet core does not support socket Keep alive, so under the ClientConfiguration you need to set the EnableTcpKeepAlive to false.
+Under linux dotnet core does not support socket keep alive, so under the ClientConfiguration you need to set the EnableTcpKeepAlive to false.
