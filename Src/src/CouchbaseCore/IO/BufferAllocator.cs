@@ -23,7 +23,6 @@ namespace Couchbase.IO
 
         public BufferAllocator(int totalBytes, int bufferSize, ILoggerFactory loggerFactory)
         {
-            System.Console.WriteLine(nameof(BufferAllocator) + " "+nameof(BufferAllocator));
             Log = loggerFactory.CreateLogger<BufferAllocator>();
             _numberOfBytes = totalBytes;
             _currentIndex = 0;
