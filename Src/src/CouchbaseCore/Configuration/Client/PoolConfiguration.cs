@@ -47,8 +47,6 @@ namespace Couchbase.Configuration.Client
 
         public PoolConfiguration(ILoggerFactory loggerFactory = null, ClientConfiguration clientConfiguration = null)
         {
-            System.Console.WriteLine(nameof(PoolConfiguration) + " 1");
-
             _loggerFactory = loggerFactory;
             if (loggerFactory != null)
                 Log = _loggerFactory.CreateLogger<PoolConfiguration>();
@@ -78,7 +76,6 @@ namespace Couchbase.Configuration.Client
         public PoolConfiguration(ILoggerFactory loggerFactory, int maxSize, int minSize, int waitTimeout, int receiveTimeout, int shutdownTimeout,
             int operationTimeout, int maxAcquireIterationCount, int connectTimeout, ClientConfiguration clientConfiguration = null)
         {
-            System.Console.WriteLine(nameof(PoolConfiguration)+ " 2");
             _loggerFactory = loggerFactory;
 
             if (loggerFactory != null)
