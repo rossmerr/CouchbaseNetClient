@@ -51,17 +51,11 @@ namespace Couchbase.IO
         /// <returns>True if the bucket was set.</returns>
         public virtual bool SetBuffer(SocketAsyncEventArgs eventArgs)
         {
-            System.Console.WriteLine(nameof(BufferAllocator));
             lock (_freeIndexPool)
             {
                 EnsureBufferAllocated();
 
                 var isBufferSet = true;
-                System.Console.WriteLine(nameof(BufferAllocator) + " port " + ((IPEndPoint)eventArgs.AcceptSocket.LocalEndPoint).Port);
-                System.Console.WriteLine(nameof(BufferAllocator) + " _freeIndexPool.Count " + _freeIndexPool.Count);
-                System.Console.WriteLine(nameof(BufferAllocator) + " _numberOfBytes " + _numberOfBytes );
-                System.Console.WriteLine(nameof(BufferAllocator) + " _bufferSize " + _bufferSize );
-                System.Console.WriteLine(nameof(BufferAllocator) + " _currentIndex " + _currentIndex);
 
                 if (_freeIndexPool.Count > 0)
                 {
@@ -71,14 +65,10 @@ namespace Couchbase.IO
                 {
                     if ((_numberOfBytes - _bufferSize) < _currentIndex)
                     {
-                       System.Console.WriteLine(nameof(BufferAllocator) + " isBufferSet false ");
-
                         isBufferSet = false;
                     }
                     else
                     {
-                        System.Console.WriteLine(nameof(BufferAllocator) + " isBufferSet true " );
-
                         eventArgs.SetBuffer(_buffer, _currentIndex, _bufferSize);
                         _currentIndex += _bufferSize;
                     }
@@ -93,8 +83,6 @@ namespace Couchbase.IO
         /// <returns>The <see cref="IOBuffer"/>, or null if no buffer is available.</returns>
         public virtual IOBuffer GetBuffer()
         {
-            System.Console.WriteLine(nameof(Connection) + " GetBuffer");
-
             lock (_freeIndexPool)
             {
                 EnsureBufferAllocated();
@@ -141,8 +129,6 @@ namespace Couchbase.IO
             {
                 try
                 {
-                    System.Console.WriteLine(nameof(BufferAllocator) + " offset " + offset);
-
                     _freeIndexPool.Push(offset);
                 }
                 catch (Exception e)
